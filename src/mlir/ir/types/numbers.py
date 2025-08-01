@@ -50,6 +50,9 @@ class IntegerType(TypeBase):
         bitwidth=[1, 2, 7, 128], signedness=[member for member in SignednessSemantics]
     )
 
+    def __str__(self) -> str:
+        return f"i{self.bitwidth}"
+
 
 class IndexType(TypeBase):
     """Represents an index type in MLIR, used in loop bounds, indexing and dimensions."""
@@ -102,5 +105,9 @@ class FloatType(TypeBase):
     def bitwidth(self) -> int:
         """Return the bit width of the floating-point type."""
         return _float_bitwidths[self.kind]
+
+    def __str__(self) -> str:
+        """Return a string representation of the floating-point type."""
+        return f"{self.kind.value}"
 
     __test_parameters__ = dict(kind=[member for member in FloatTypeKind])

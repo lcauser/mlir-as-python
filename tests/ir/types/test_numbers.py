@@ -17,9 +17,19 @@ class TestIntegerType:
         assert int_type.bitwidth == 32
         assert int_type.signedness == SignednessSemantics.UNSIGNED
 
+    def test_str(self):
+        """Test the string representation of an integer type."""
+        int_type = IntegerType(64)
+        assert str(int_type) == "i64"
+
 
 class TestFloatType:
     def test_bitwidth(self):
         """Test getting a float type with a specific bitwidth."""
         float_type = FloatType(FloatTypeKind.F32)
         assert float_type.bitwidth == 32
+
+    def test_str(self):
+        """Test the string representation of a float type."""
+        float_type = FloatType(FloatTypeKind.F64)
+        assert str(float_type) == "f64"

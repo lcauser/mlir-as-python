@@ -49,3 +49,13 @@ class TestTypes:
                 (type_class.__name__,) + tuple(params.values())
             )
             assert retrieved_type is type_instance
+
+    def test_repr(self, type_class, combinations):
+        """Test the __repr__ method of all types."""
+        for params in combinations:
+            type_instance = type_class(**params)
+            repr_str = repr(type_instance)
+            assert isinstance(repr_str, str)
+            assert type_instance.__class__.__name__ in repr_str
+            for key, value in params.items():
+                assert f"{key}={value}" in repr_str

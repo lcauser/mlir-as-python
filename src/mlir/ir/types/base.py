@@ -1,5 +1,5 @@
-from abc import ABC
-from pydantic import BaseModel
+from abc import ABC, abstractmethod
+from pydantic import BaseModel, ConfigDict
 
 from mlir.context import MLIRContext
 
@@ -7,9 +7,7 @@ from mlir.context import MLIRContext
 class TypeBase(ABC, BaseModel):
     """Base class for MLIR typing."""
 
-    class Config:
-        extra = "forbid"
-        frozen = True
+    model_config = ConfigDict(extra="forbid", frozen=True)
 
     @classmethod
     def get(cls, context: MLIRContext, *args):
@@ -24,3 +22,13 @@ class TypeBase(ABC, BaseModel):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+    @abstractmethod
+    def __str__(self) -> str:
+        """Return a string representation of the type."""
+        pass
+
+    def __repr__(self) -> str:
+        """Return a string representation of the type for debugging."""
+        fields = self.__class__.model_fields
+        return f"{self.__class__.__name__}({', '.join(f'{k}={getattr(self, k)}' for k in fields)})"
