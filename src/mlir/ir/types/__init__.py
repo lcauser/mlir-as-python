@@ -1,4 +1,4 @@
-from .base import TypeBase
+from .base import TypeBase, TypeStorage
 from .numbers import (
     IntegerType,
     IndexType,
@@ -9,6 +9,7 @@ from .numbers import (
 
 __all__ = [
     "TypeBase",
+    "TypeStorage",
     "IntegerType",
     "IndexType",
     "FloatType",

@@ -2,7 +2,10 @@ from pydantic import Field, PositiveInt
 from functools import cached_property
 from enum import Enum
 
-from mlir.context import MLIRContext
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from mlir.context import MLIRContext
 
 from .base import TypeBase
 
@@ -37,12 +40,14 @@ class IntegerType(TypeBase):
         super().__init__(bitwidth=bitwidth, signedness=signedness)
 
     @classmethod
-    def get_signed(cls, context: MLIRContext, bitwidth: PositiveInt) -> "IntegerType":
+    def get_signed(cls, context: "MLIRContext", bitwidth: PositiveInt) -> "IntegerType":
         """Return a signed integer type with the specified bit width."""
         return cls.get(context, bitwidth, SignednessSemantics.SIGNED)
 
     @classmethod
-    def get_unsigned(cls, context: MLIRContext, bitwidth: PositiveInt) -> "IntegerType":
+    def get_unsigned(
+        cls, context: "MLIRContext", bitwidth: PositiveInt
+    ) -> "IntegerType":
         """Return an unsigned integer type with the specified bit width."""
         return cls.get(context, bitwidth, SignednessSemantics.UNSIGNED)
 
@@ -53,12 +58,46 @@ class IntegerType(TypeBase):
     def __str__(self) -> str:
         return f"i{self.bitwidth}"
 
+    def validate(self, value):
+        """Validates that the value is an integer within the bounds of the type.
+
+        * For signed integers, the range is [-2^(bitwidth-1), 2^(bitwidth-1) - 1].
+        * For unsigned integers, the range is [0, 2^bitwidth - 1].
+        * For signless integers, the bounds take the minimum of both both lower bounds and
+          the maximum of both upper bounds, with type interpretted at compile time.
+          Practically, we must check for [-2^(bitwidth-1), 2^bitwidth - 1].
+        """
+        if not isinstance(value, int):
+            raise ValueError(f"Value {value} is not an integer.")
+
+        lower_bound = (
+            0
+            if self.signedness == SignednessSemantics.UNSIGNED
+            else -(2 ** (self.bitwidth - 1))
+        )
+        upper_bound = (
+            2 ** (self.bitwidth - 1) - 1
+            if self.signedness == SignednessSemantics.SIGNED
+            else 2**self.bitwidth - 1
+        )
+        if not (lower_bound <= value <= upper_bound):
+            raise ValueError(
+                f"Value {value} is out of bounds for {self.signedness.value} i{self.bitwidth}."
+            )
+
 
 class IndexType(TypeBase):
     """Represents an index type in MLIR, used in loop bounds, indexing and dimensions."""
 
     def __init__(self):
         super().__init__()
+
+    def validate(self, value):
+        """Not sure this is entirely correct."""
+        if not isinstance(value, int):
+            raise ValueError(f"Value {value} is not an integer.")
+        if value < 0:
+            raise ValueError(f"Value {value} cannot be negative for index type.")
 
 
 class FloatTypeKind(Enum):
@@ -105,6 +144,13 @@ class FloatType(TypeBase):
     def bitwidth(self) -> int:
         """Return the bit width of the floating-point type."""
         return _float_bitwidths[self.kind]
+
+    def validate(self, value):
+        """Validates that the value is a float.
+
+        More details to be added later."""
+        if not isinstance(value, float):
+            raise ValueError(f"Value {value} is not a float.")
 
     def __str__(self) -> str:
         """Return a string representation of the floating-point type."""
