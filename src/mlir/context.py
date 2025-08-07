@@ -1,4 +1,5 @@
 from mlir.ir.types import TypeBase, TypeStorage
+from mlir.ir.attributes import AttributeBase, AttributeStorage
 
 
 class MLIRContext:
@@ -15,6 +16,7 @@ class MLIRContext:
     def __init__(self):
         """Instantiate a new MLIRContext."""
         self.types: TypeStorage = TypeStorage()
+        self.attributes: AttributeStorage = AttributeStorage()
 
     def get_type(self, key: tuple) -> TypeBase | None:
         """Return a type from the context by a key, which is a tuple of its type and
@@ -32,3 +34,8 @@ class MLIRContext:
                     f"The {key} already exists in the context with a different value."
                 )
         self.types.add(key, value)
+
+    def get_attribute(self, key: tuple) -> AttributeBase | None:
+        """Return an attribute from the context by a key, which is a tuple of its type and
+        parameters that define the type. If the attribute does not exist, return None."""
+        return self.attributes.get(key)

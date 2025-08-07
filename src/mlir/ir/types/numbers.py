@@ -37,6 +37,7 @@ class IntegerType(TypeBase):
         bitwidth: PositiveInt,
         signedness: SignednessSemantics = SignednessSemantics.SIGNLESS,
     ):
+        """Note: __init__ is specified so the signature can be used for factory testing."""
         super().__init__(bitwidth=bitwidth, signedness=signedness)
 
     @classmethod
@@ -50,13 +51,6 @@ class IntegerType(TypeBase):
     ) -> "IntegerType":
         """Return an unsigned integer type with the specified bit width."""
         return cls.get(context, bitwidth, SignednessSemantics.UNSIGNED)
-
-    __test_parameters__ = dict(
-        bitwidth=[1, 2, 7, 128], signedness=[member for member in SignednessSemantics]
-    )
-
-    def __str__(self) -> str:
-        return f"i{self.bitwidth}"
 
     def validate(self, value):
         """Validates that the value is an integer within the bounds of the type.
@@ -85,11 +79,47 @@ class IntegerType(TypeBase):
                 f"Value {value} is out of bounds for {self.signedness.value} i{self.bitwidth}."
             )
 
+    def __str__(self) -> str:
+        return f"i{self.bitwidth}"
+
+    def __hash__(self) -> int:
+        return hash((self.__class__, self.bitwidth, self.signedness))
+
+    __test_parameters__ = dict(
+        bitwidth=[1, 2, 7, 128], signedness=[member for member in SignednessSemantics]
+    )
+    __test_validate_passes__ = [
+        dict(bitwidth=bitwidth, signedness=signedness, value=value)
+        for signedness, bitwidth, value in [
+            (SignednessSemantics.UNSIGNED, 4, 0),
+            (SignednessSemantics.UNSIGNED, 4, 15),
+            (SignednessSemantics.SIGNED, 4, 7),
+            (SignednessSemantics.SIGNED, 4, -8),
+            (SignednessSemantics.SIGNED, 4, 0),
+            (SignednessSemantics.SIGNLESS, 4, -8),
+            (SignednessSemantics.SIGNLESS, 4, 15),
+            (SignednessSemantics.SIGNLESS, 4, 0),
+        ]
+    ]
+    __test_validate_fails__ = [
+        dict(bitwidth=bitwidth, signedness=signedness, value=value)
+        for signedness, bitwidth, value in [
+            (SignednessSemantics.SIGNED, 4, -9),
+            (SignednessSemantics.SIGNED, 4, 8),
+            (SignednessSemantics.UNSIGNED, 4, -1),
+            (SignednessSemantics.UNSIGNED, 4, 16),
+            (SignednessSemantics.SIGNLESS, 4, -9),
+            (SignednessSemantics.SIGNLESS, 4, 16),
+            (SignednessSemantics.SIGNLESS, 4, 1.23),
+        ]
+    ]
+
 
 class IndexType(TypeBase):
     """Represents an index type in MLIR, used in loop bounds, indexing and dimensions."""
 
     def __init__(self):
+        """Note: __init__ is specified so the signature can be used for factory testing."""
         super().__init__()
 
     def validate(self, value):
@@ -98,6 +128,12 @@ class IndexType(TypeBase):
             raise ValueError(f"Value {value} is not an integer.")
         if value < 0:
             raise ValueError(f"Value {value} cannot be negative for index type.")
+
+    def __str__(self) -> str:
+        return "index"
+
+    def __hash__(self) -> int:
+        return hash(self.__class__)
 
 
 class FloatTypeKind(Enum):
@@ -138,6 +174,7 @@ class FloatType(TypeBase):
     kind: FloatTypeKind = Field(..., description="The kind of floating-point type.")
 
     def __init__(self, kind: FloatTypeKind):
+        """Note: __init__ is specified so the signature can be used for factory testing."""
         super().__init__(kind=kind)
 
     @cached_property
@@ -156,4 +193,12 @@ class FloatType(TypeBase):
         """Return a string representation of the floating-point type."""
         return f"{self.kind.value}"
 
+    def __hash__(self) -> int:
+        """Hash the float type based on its kind."""
+        return hash((self.__class__, self.kind))
+
     __test_parameters__ = dict(kind=[member for member in FloatTypeKind])
+    __test_validate_passes__ = [dict(kind=kind, value=3.14) for kind in FloatTypeKind]
+    __test_validate_fails__ = [
+        dict(kind=kind, value="not a float") for kind in FloatTypeKind
+    ]

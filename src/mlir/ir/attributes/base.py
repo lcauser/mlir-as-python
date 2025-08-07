@@ -1,5 +1,9 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
-from ir.types import TypeBase
+from mlir.ir.types import TypeBase
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    pass
 
 
 class AttributeBase(BaseModel):
@@ -10,13 +14,18 @@ class AttributeBase(BaseModel):
     attribute_type: TypeBase = Field(..., alias="type")
     """The type of the attribute, which is an instance of TypeBase."""
 
-    value: any
+    value: Any
     """The value of the attribute: subclasses should use stricter type checking."""
 
     @model_validator(mode="before")
     def validate_type(cls, values):
         """Ensure that the type is an instance of TypeBase."""
-        values.get("attribute_type").validate(values.get("value"))
+        values.get("type").validate(values.get("value"))
+        return values
+
+    def __str__(self) -> str:
+        """Return a string representation of the attribute."""
+        return f"{self.value} : {self.attribute_type}"
 
 
 class AttributeStorage:

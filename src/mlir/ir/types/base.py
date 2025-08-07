@@ -27,19 +27,25 @@ class TypeBase(ABC, BaseModel):
         super().__init__(**kwargs)
 
     @abstractmethod
+    def validate(self, value):
+        """Raises if the value doesn't match the type."""
+        pass
+
+    @abstractmethod
     def __str__(self) -> str:
         """Return a string representation of the type."""
+        pass
+
+    @abstractmethod
+    def __hash__(self) -> int:
+        """Method to hash the type for deduplication. Should just be a tuple hash of the
+        parameters, but details are left to the subclass."""
         pass
 
     def __repr__(self) -> str:
         """Return a string representation of the type for debugging."""
         fields = self.__class__.model_fields
         return f"{self.__class__.__name__}({', '.join(f'{k}={getattr(self, k)}' for k in fields)})"
-
-    @abstractmethod
-    def validate(self, value):
-        """Raises if the value doesn't match the type."""
-        pass
 
 
 class TypeStorage:

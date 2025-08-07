@@ -3,6 +3,7 @@ from mlir.context import MLIRContext
 from mlir.ir.types import TypeBase
 from inspect import signature
 from itertools import product
+from copy import deepcopy
 
 all_types = TypeBase.__subclasses__()
 
@@ -59,3 +60,24 @@ class TestTypes:
             assert type_instance.__class__.__name__ in repr_str
             for key, value in params.items():
                 assert f"{key}={value}" in repr_str
+
+    def test_validate_passes(self, type_class):
+        """Test the validate method of all types with valid values."""
+        if not hasattr(type_class, "__test_validate_passes__"):
+            return
+        for test in type_class.__test_validate_passes__:
+            test = deepcopy(test)
+            value = test.pop("value")
+            type_instance = type_class(**test)
+            type_instance.validate(value)
+
+    def test_validate_fails(self, type_class):
+        """Test the validate method of all types with invalid values."""
+        if not hasattr(type_class, "__test_validate_fails__"):
+            return
+        for test in type_class.__test_validate_fails__:
+            test = deepcopy(test)
+            value = test.pop("value")
+            type_instance = type_class(**test)
+            with pytest.raises(ValueError):
+                type_instance.validate(value)
