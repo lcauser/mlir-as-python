@@ -49,7 +49,12 @@ class TypeBase(ABC, BaseModel):
 
 
 class TypeStorage:
-    """A storage for types for deduplication."""
+    """A storage for types for deduplication.
+
+    In MLIR, types and type storage are much more elegant than this; the storage contains
+    the definitions, and the types are pointers to within. They also allocate a storage for
+    each type, which is not done here.
+    """
 
     def __init__(self):
         self._types = {}

@@ -29,7 +29,12 @@ class AttributeBase(BaseModel):
 
 
 class AttributeStorage:
-    """A storage for attributes for deduplication."""
+    """A storage for attributes for deduplication.
+
+    In MLIR, types and attr storage are much more elegant than this; the storage contains
+    the definitions, and the attrs are pointers to within. They also allocate a storage for
+    each type, which is not done here.
+    """
 
     def __init__(self):
         self._attributes = {}
