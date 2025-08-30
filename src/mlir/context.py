@@ -39,3 +39,8 @@ class MLIRContext:
         """Return an attribute from the context by a key, which is a tuple of its type and
         parameters that define the type. If the attribute does not exist, return None."""
         return self.attributes.get(key)
+
+    def add_attribute(self, key: tuple, value: AttributeBase):
+        """Add an attribute to the context. If the attribute already exists, this will raise
+        an error."""
+        self.attributes.add(key, value)

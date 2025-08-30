@@ -21,11 +21,19 @@ class Value(BaseModel, Generic[T]):
     uses: list["OpOperand"] = Field(default_factory=list)
     """Contains the list of uses for this value."""
 
+    def add_use(self, use: "OpOperand"):
+        """Adds a use for this value."""
+        self.uses.append(use)
+
+    def remove_use(self, use: "OpOperand"):
+        """Removes a use for this value."""
+        self.uses.remove(use)
+
 
 class OpResult(Value[T]):
     """Represents a result of an operation in MLIR."""
 
-    owner: "Operation"
+    owner: "Operation | None" = Field(default=None)
     """The operation that produces this result."""
 
     value: Value[T]
@@ -38,7 +46,7 @@ class OpResult(Value[T]):
 class BlockArgument(Value[T]):
     """Represents an SSA value argument for a block."""
 
-    owner: "Block"
+    owner: "Block | None" = Field(default=None)
     """The block that owns this argument."""
 
     index: NonNegativeInt
