@@ -11,6 +11,7 @@ class MLIRContext:
 
     * Types used: Declares one instance of each type to allow for effecient memory usage,
       but effecient lowering etc.
+    * Attributes used: Same as types, but for attributes.
     """
 
     def __init__(self):
