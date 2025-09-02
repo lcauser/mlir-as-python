@@ -4,7 +4,10 @@ from typing import Generic, TypeVar, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from mlir.ir.operations import Operation, OpOperand
-    from mlir.ir.blocks import Block
+
+    # TODO: revert with MLIR-14
+    # from mlir.ir.blocks import Block
+    Block = list
 
 T = TypeVar("T", bound=TypeBase)
 

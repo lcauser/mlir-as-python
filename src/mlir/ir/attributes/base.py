@@ -20,7 +20,7 @@ class AttributeBase(BaseModel):
     @model_validator(mode="before")
     def validate_type(cls, values):
         """Ensure that the type is an instance of TypeBase."""
-        values.get("type").validate(values.get("value"))
+        values.get("type").validate_type(values.get("value"))
         return values
 
     def __str__(self) -> str:

@@ -20,7 +20,10 @@ class TestTypes:
         if len(args) == 0:
             return []
 
-        test_parameters = type_class.__test_parameters__
+        if (
+            test_parameters := getattr(type_class, "__test_parameters__", None)
+        ) is None:
+            return []
         assert len(test_parameters) == len(args)
         keys = test_parameters.keys()
         values = test_parameters.values()
@@ -69,7 +72,7 @@ class TestTypes:
             test = deepcopy(test)
             value = test.pop("value")
             type_instance = type_class(**test)
-            type_instance.validate(value)
+            type_instance.validate_type(value)
 
     def test_validate_fails(self, type_class):
         """Test the validate method of all types with invalid values."""
@@ -80,4 +83,4 @@ class TestTypes:
             value = test.pop("value")
             type_instance = type_class(**test)
             with pytest.raises(ValueError):
-                type_instance.validate(value)
+                type_instance.validate_type(value)

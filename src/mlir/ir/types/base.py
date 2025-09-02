@@ -27,7 +27,7 @@ class TypeBase(ABC, BaseModel):
         super().__init__(**kwargs)
 
     @abstractmethod
-    def validate(self, value):
+    def validate_type(self, value):
         """Raises if the value doesn't match the type."""
         pass
 

@@ -1,12 +1,16 @@
 from pydantic import BaseModel, NonNegativeInt, Field, model_validator
-from mlir.ir.value import Value, OpResult
 from typing import Generic, TypeVar, TYPE_CHECKING
 from mlir.ir.types import TypeBase
 from mlir.ir.attributes import AttributeBase
+from mlir.ir.value import Value, OpResult
 
 if TYPE_CHECKING:
-    from mlir.ir.regions import Region
-    from mlir.ir.blocks import Block
+    # TODO: resolve with MLIR-15
+    # from mlir.ir.regions import Region
+    Region = list
+    # TODO: resolve with MLIR-14
+    # from mlir.ir.blocks import Block
+    Block = list
 
 T = TypeVar("T", bound=TypeBase)
 
@@ -28,7 +32,7 @@ class OpOperand(BaseModel, Generic[T]):
     index: NonNegativeInt
     """The index of the operand in the operation's operands list."""
 
-    @model_validator("value", mode="before")
+    @model_validator(mode="before")
     def in_value_uses(self):
         """Ensures that this operand is in the uses of the value it represents."""
         if self not in self.value.uses:
@@ -57,7 +61,7 @@ class Operation(BaseModel):
     regions: list["Region"] = Field(default_factory=list)
     """List of regions for the operation, which can nest blocks and operations."""
 
-    parent: Block | None
+    parent: "Block | None"
     """The parent block that contains this operation, if any."""
 
     @model_validator(mode="after")

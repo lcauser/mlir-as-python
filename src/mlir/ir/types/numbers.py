@@ -52,7 +52,7 @@ class IntegerType(TypeBase):
         """Return an unsigned integer type with the specified bit width."""
         return cls.get(context, bitwidth, SignednessSemantics.UNSIGNED)
 
-    def validate(self, value):
+    def validate_type(self, value):
         """Validates that the value is an integer within the bounds of the type.
 
         * For signed integers, the range is [-2^(bitwidth-1), 2^(bitwidth-1) - 1].
@@ -122,7 +122,7 @@ class IndexType(TypeBase):
         """Note: __init__ is specified so the signature can be used for factory testing."""
         super().__init__()
 
-    def validate(self, value):
+    def validate_type(self, value):
         """Not sure this is entirely correct."""
         if not isinstance(value, int):
             raise ValueError(f"Value {value} is not an integer.")
@@ -182,7 +182,7 @@ class FloatType(TypeBase):
         """Return the bit width of the floating-point type."""
         return _float_bitwidths[self.kind]
 
-    def validate(self, value):
+    def validate_type(self, value):
         """Validates that the value is a float.
 
         More details to be added later."""
