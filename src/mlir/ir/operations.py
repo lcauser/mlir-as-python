@@ -1,8 +1,9 @@
-from pydantic import BaseModel, NonNegativeInt, Field, model_validator
-from typing import Generic, TypeVar, TYPE_CHECKING
-from mlir.ir.types import TypeBase
+from pydantic import NonNegativeInt
+from typing import TYPE_CHECKING
 from mlir.ir.attributes import AttributeBase
 from mlir.ir.value import Value, OpResult
+from mlir.utils.validator import validator, ValidatorMeta
+from abc import ABC, abstractmethod, ABCMeta
 
 if TYPE_CHECKING:
     # TODO: resolve with MLIR-15
@@ -12,10 +13,8 @@ if TYPE_CHECKING:
     # from mlir.ir.blocks import Block
     Block = list
 
-T = TypeVar("T", bound=TypeBase)
 
-
-class OpOperand(BaseModel, Generic[T]):
+class OpOperand:
     """Represents an operand of an operation in MLIR.
 
     Linked to the operation that owns it and the value it represents, allowing us to
@@ -23,48 +22,50 @@ class OpOperand(BaseModel, Generic[T]):
     in the value.
     """
 
-    owner: "Operation"
-    """The operation that owns this operand."""
-
-    value: Value[T]
-    """The value of the operand, which is an instance of Value."""
-
-    index: NonNegativeInt
-    """The index of the operand in the operation's operands list."""
-
-    @model_validator(mode="before")
-    def in_value_uses(self):
-        """Ensures that this operand is in the uses of the value it represents."""
+    def __init__(self, owner: "Operation", value: Value, index: NonNegativeInt):
+        self.owner: Operation = owner
+        self.value: Value = value
+        self.index: NonNegativeInt = index
         if self not in self.value.uses:
             self.value.add_use(self)
-        return self
 
 
-class Operation(BaseModel):
+class OperationMeta(ValidatorMeta, ABCMeta):
+    pass
+
+
+class Operation(ABC, metaclass=OperationMeta):
     """Base class for MLIR operations.
 
-    Contains the data the makes up an operations. Data structures are assembled using
-    Pydantic to ensure validity.
+    Contains the data that makes up an operations.
 
     TODO: implement as double-linked list?
     """
 
-    operands: list[OpOperand] = Field(default_factory=list)
-    """List of operands for the operation, which contain the SSA values."""
+    def __init__(
+        self,
+        operands: list[Value],
+        attributes: dict[str, AttributeBase],
+        regions: list["Region"] | None = None,
+        parent: "Block | None" = None,
+    ):
+        self.operands: list[OpOperand] = [
+            OpOperand(self, operand, idx) for idx, operand in enumerate(operands)
+        ]
+        self.attributes: dict[str, AttributeBase] = attributes
+        self.regions: list["Region"] = regions or []
+        self.parent: "Block | None" = parent
+        # TODO: think about what this should be...
+        self.results = self.create_results(operands=operands, attributes=attributes)
 
-    results: list[OpResult] = Field(default_factory=list)
-    """List of results for the operation, which are instances of OpResult."""
+    @abstractmethod
+    def create_results(self, **kwargs) -> list[OpResult]:
+        """Implements a factory for creating the results list, given the operands and
+        attributes. This is operation-specific logic, so it must be implemented by
+        each subclass."""
+        pass
 
-    attributes: dict[str, AttributeBase] = Field(default_factory=dict)
-    """Dictionary of attributes for the operation."""
-
-    regions: list["Region"] = Field(default_factory=list)
-    """List of regions for the operation, which can nest blocks and operations."""
-
-    parent: "Block | None"
-    """The parent block that contains this operation, if any."""
-
-    @model_validator(mode="after")
+    @validator
     def validate_operands(self):
         """Ensures that each operand's owner is this operation, and that the index is
         correct. If the owner is not set, then this will set it to this operation."""
@@ -83,7 +84,21 @@ class Operation(BaseModel):
                 )
         return self
 
-    @model_validator(mode="after")
+    @validator
+    def validate_regions(self):
+        """Ensures that each region's parent operation is this operation. If the parent
+        operation is not set, then this will set it to this operation."""
+
+        for region in self.regions:
+            if region.parent != self and region.parent is not None:
+                raise ValueError(
+                    f"Region {region} does not belong to operation {self}."
+                )
+            elif region.parent is None:
+                region.parent = self
+        return self
+
+    @validator
     def validate_results(self):
         """Ensures that each result's owner is this operation, and that the index is
         correct. If the owner is not set, then this will set it to this operation."""
@@ -100,18 +115,4 @@ class Operation(BaseModel):
                 raise ValueError(
                     f"Result {result} has index {result.index}, but should be {idx}."
                 )
-        return self
-
-    @model_validator(mode="after")
-    def validate_regions(self):
-        """Ensures that each region's parent operation is this operation. If the parent
-        operation is not set, then this will set it to this operation."""
-
-        for region in self.regions:
-            if region.parent != self and region.parent is not None:
-                raise ValueError(
-                    f"Region {region} does not belong to operation {self}."
-                )
-            elif region.parent is None:
-                region.parent = self
         return self

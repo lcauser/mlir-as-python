@@ -1,7 +1,7 @@
 from abc import ABC
 from pydantic import NonNegativeInt
 from mlir.ir.types import TypeBase
-from typing import Generic, TypeVar, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from mlir.ir.operations import Operation, OpOperand
@@ -10,17 +10,15 @@ if TYPE_CHECKING:
     # from mlir.ir.blocks import Block
     Block = list
 
-T = TypeVar("T", bound=TypeBase)
 
-
-class Value(ABC, Generic[T]):
+class Value(ABC):
     """Base class for MLIR values, which are instances of TypeBase.
 
     In MLIR this would be an opaque wrapper around a pointer to the SSA value. Here I just
     model it as a base class and we will pass around references to the objects.
     """
 
-    def __init__(self, type: T):
+    def __init__(self, type: TypeBase):
         self.type = type
         self.uses: list["OpOperand"] = []
 
@@ -33,7 +31,7 @@ class Value(ABC, Generic[T]):
         self.uses.remove(use)
 
 
-class OpResult(Value[T]):
+class OpResult(Value):
     """Represents a result of an operation in MLIR.
 
     Linked to the operation that produces it, allowing us to easily traverse the IR.
@@ -43,7 +41,9 @@ class OpResult(Value[T]):
     :param index: The index of the result in the operation's results list.
     """
 
-    def __init__(self, type: T, owner: "Operation | None", index: NonNegativeInt):
+    def __init__(
+        self, type: TypeBase, owner: "Operation | None", index: NonNegativeInt
+    ):
         super().__init__(type)
         self.owner = owner
         self.index = index
@@ -52,7 +52,7 @@ class OpResult(Value[T]):
         return f"OpResult(type={self.type}, owner={self.owner}, index={self.index})"
 
 
-class BlockArgument(Value[T]):
+class BlockArgument(Value):
     """Represents an SSA value argument for a block.
 
     Contains a reference to the block that owns it, allowing us to easily traverse the IR.
@@ -62,7 +62,7 @@ class BlockArgument(Value[T]):
     :param index: The index of the argument in the block's arguments list.
     """
 
-    def __init__(self, type: T, owner: "Block | None", index: NonNegativeInt):
+    def __init__(self, type: TypeBase, owner: "Block | None", index: NonNegativeInt):
         super().__init__(type)
         self.owner = owner
         self.index = index
