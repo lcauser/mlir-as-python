@@ -52,6 +52,14 @@ class ValidatorMeta(type):
 
     def __new__(cls, name, bases, namespace):
         validators = []
+        # collect validators from base classes
+        for base in bases:
+            for attr_name in dir(base):
+                attr_value = getattr(base, attr_name)
+                if getattr(attr_value, "_is_validator", False):
+                    validators.append(attr_value)
+
+        # collect validators from this class
         for attr_value in namespace.values():
             if getattr(attr_value, "_is_validator", False):
                 validators.append(attr_value)

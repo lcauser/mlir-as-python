@@ -1,21 +1,27 @@
-from pydantic import BaseModel, field_validator
+from mlir.utils.validator import validator
 from functools import lru_cache
 from .base import OpTrait
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from mlir.ir.operations import Operation
 
 
 @lru_cache(maxsize=None)
 def NOperands(n: int):
     """Factory for producing classes that enforce a fixed number of operands."""
 
-    class _NOperands(BaseModel, OpTrait):
-        @field_validator("operands")
-        @classmethod
-        def check_operands_have_correct_length(cls, v):
-            if len(v) != n:
+    class _NOperands(OpTrait):
+        """Trait for operations with exactly `n` operands."""
+
+        @validator
+        def validate_operands_have_correct_length(self: "Operation") -> "Operation":
+            if len(self.operands) != n:
                 raise ValueError(
-                    f"{cls.__name__} requires exactly {n} operands, but got {len(v)}"
+                    f"{self.__class__.__name__} requires exactly {n} operands, but got "
+                    f"{len(self.operands)}"
                 )
-            return v
+            return self
 
     return _NOperands
 
