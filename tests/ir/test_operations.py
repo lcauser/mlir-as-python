@@ -1,3 +1,5 @@
+import pytest
+
 from mlir.ir.operations import Operation, OpResult
 from mlir.ir.types.numbers import IntegerType
 from mlir.ir.value import BlockArgument
@@ -19,7 +21,7 @@ class TestOperation:
         assert op.operands[0].owner is op
         assert op.operands[0] in op.operands[0].value.uses
 
-    class DummyOp(Operation):
+    class DummyResultsOp(Operation):
         def create_results(self, operands, **kwargs) -> list[OpResult]:
             results = []
             for i in range(len(operands)):
@@ -27,3 +29,16 @@ class TestOperation:
                 results.append(OpResult(type, self, i))
 
             return results
+
+    def test_valiate_results(self):
+        operand = BlockArgument(IntegerType(32), None, 0)
+        op = self.DummyResultsOp(operands=[operand, operand], attributes={})
+        assert len(op.results) == 2
+        for i, result in enumerate(op.results):
+            assert result.owner is op
+            assert result.index == i
+            assert result.type == IntegerType(32)
+
+    @pytest.mark.skip("TODO: MLIR-15, needs regions")
+    def test_validate_regions(self):
+        pass
