@@ -68,7 +68,10 @@ class Operation(ABC, metaclass=OperationMeta):
     @validator
     def validate_operands(self):
         """Ensures that each operand's owner is this operation, and that the index is
-        correct. If the owner is not set, then this will set it to this operation."""
+        correct. If the owner is not set, then this will set it to this operation.
+
+        # TODO: probably somewhat redundant since instantiation deals with assignment.
+        """
 
         for idx, operand in enumerate(self.operands):
             if operand.owner != self and operand.owner is not None:
