@@ -5,10 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from mlir.ir.operations import Operation, OpOperand
-
-    # TODO: revert with MLIR-14
-    # from mlir.ir.blocks import Block
-    Block = list
+    from mlir.ir.blocks import Block
 
 
 class Value(ABC):
