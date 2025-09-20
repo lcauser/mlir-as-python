@@ -115,6 +115,7 @@ class Block:
             )
         index = argument.index
         argument.owner = None
+        argument.index = None
         self._arguments.remove(argument)
         for i in range(index, self.number_of_arguments):
             self._arguments[i].index = i

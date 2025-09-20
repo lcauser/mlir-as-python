@@ -82,3 +82,129 @@ class TestBlock:
         assert block_arg.type == arg
         assert block_arg.index == 2
         assert block_arg.owner == block
+
+    def test_insert_argument(self):
+        block = self.create_block()
+        arg = IntegerType(bitwidth=8)
+        block.insert_argument(0, arg)
+        block_arg = block.get_argument(0)
+        assert isinstance(block_arg, BlockArgument)
+        assert block_arg.type == arg
+        assert block_arg.index == 0
+        assert block_arg.owner == block
+
+    def test_remove_argument_from_block(self):
+        block = self.create_block()
+        arg = IntegerType(bitwidth=8)
+        block.insert_argument(1, arg)
+        block_arg = block.get_argument(1)
+        assert isinstance(block_arg, BlockArgument)
+        assert block_arg.type == arg
+        assert block_arg.index == 1
+        assert block_arg.owner == block
+        assert block.number_of_arguments == 3
+
+        # remove it
+        block.remove_argument(block_arg)
+        assert block.number_of_arguments == 2
+        for arg_idx in range(2):
+            assert block.get_argument(arg_idx).type != arg
+        assert block_arg.owner is None
+        assert block_arg.index is None
+
+    def test_remove_argument_from_index(self):
+        block = self.create_block()
+        arg = IntegerType(bitwidth=8)
+        block.insert_argument(1, arg)
+        block_arg = block.get_argument(1)
+        assert isinstance(block_arg, BlockArgument)
+        assert block_arg.type == arg
+        assert block_arg.index == 1
+        assert block_arg.owner == block
+        assert block.number_of_arguments == 3
+
+        # remove it
+        block.remove_argument(1)
+        assert block.number_of_arguments == 2
+        for arg_idx in range(2):
+            assert block.get_argument(arg_idx).type != arg
+        assert block_arg.owner is None
+        assert block_arg.index is None
+
+        # should raise
+        with pytest.raises(ValueError, match="does not belong to this block"):
+            block.remove_argument(block_arg)
+
+    def test_push_end(self):
+        op = DummyOp([], {})
+        assert op.parent is None
+        block = self.create_block()
+        block.push_end(op)
+        assert block.number_of_operations == 3
+        op_ref = block.get_operation(2)
+        assert op_ref is op
+        assert op_ref.parent is block
+
+    def test_push_front(self):
+        op = DummyOp([], {})
+        assert op.parent is None
+        block = self.create_block()
+        block.push_front(op)
+        assert block.number_of_operations == 3
+        op_ref = block.get_operation(0)
+        assert op_ref is op
+        assert op_ref.parent is block
+
+    def test_insert_operation(self):
+        op = DummyOp([], {})
+        assert op.parent is None
+        block = self.create_block()
+        block.insert_operation(1, op)
+        assert block.number_of_operations == 3
+        op_ref = block.get_operation(1)
+        assert op_ref is op
+        assert op_ref.parent is block
+
+    def test_remove_operation(self):
+        op = DummyOp([], {})
+        block = self.create_block()
+        block.insert_operation(1, op)
+        assert block.number_of_operations == 3
+        op_ref = block.get_operation(1)
+        assert op_ref is op
+        assert op_ref.parent is block
+
+        block.remove_operation(op_ref)
+        assert block.number_of_operations == 2
+        for i in range(2):
+            assert block.get_operation(i) is not op
+        assert op_ref.parent is None
+
+        with pytest.raises(ValueError, match="does not belong to this block"):
+            block.remove_operation(op_ref)
+
+    def test_clear(self):
+        block = self.create_block()
+        op_refs = [block.get_operation(i) for i in range(2)]
+        assert block.number_of_operations == 2
+        block.clear()
+        assert block.number_of_operations == 0
+        assert all([op.parent is None for op in op_refs])
+
+    def test_splice(self):
+        block = self.create_block()
+        other_block = self.create_block()
+
+        assert block.number_of_operations == 2
+        assert other_block.number_of_operations == 2
+
+        op = block.get_operation(0)
+        assert op.parent is block
+        block.splice(op, other_block, 0)
+
+        assert op.parent is other_block
+        assert block.number_of_operations == 1
+        assert other_block.number_of_operations == 3
+
+        with pytest.raises(ValueError, match="does not belong to this block"):
+            block.splice(op, other_block, 2)

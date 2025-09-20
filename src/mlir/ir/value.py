@@ -59,7 +59,9 @@ class BlockArgument(Value):
     :param index: The index of the argument in the block's arguments list.
     """
 
-    def __init__(self, type: TypeBase, owner: "Block | None", index: NonNegativeInt):
+    def __init__(
+        self, type: TypeBase, owner: "Block | None", index: NonNegativeInt | None
+    ):
         super().__init__(type)
         self.owner = owner
         self.index = index
