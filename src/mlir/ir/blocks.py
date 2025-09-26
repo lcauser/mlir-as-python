@@ -19,7 +19,7 @@ class Block:
         self,
         arguments: list[TypeBase] = [],
         operations: list[Operation] = [],
-        owner: Region | None = None,
+        owner: "Region | None" = None,
     ):
         self._arguments = []
         self._operations = []
