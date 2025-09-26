@@ -7,10 +7,7 @@ from abc import ABC, abstractmethod, ABCMeta
 
 if TYPE_CHECKING:
     from mlir.ir.blocks import Block
-
-    # TODO: resolve with MLIR-15
-    # from mlir.ir.regions import Region
-    Region = list
+    from mlir.ir.regions import Region
 
 
 class OpOperand:
