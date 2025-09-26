@@ -5,7 +5,7 @@ from mlir.ir.traits.terminator import Terminator
 from mlir.ir.types import TypeBase
 
 if TYPE_CHECKING:
-    Region = None  # TODO add region
+    from mlir.ir.regions import Region
 
 
 class Block:
@@ -19,7 +19,7 @@ class Block:
         self,
         arguments: list[TypeBase] = [],
         operations: list[Operation] = [],
-        owner: "Region | None" = None,
+        owner: Region | None = None,
     ):
         self._arguments = []
         self._operations = []
