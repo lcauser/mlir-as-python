@@ -1,5 +1,6 @@
-from .base import OpTrait
 from pydantic import BaseModel, Field, field_validator
+
+from .base import OpTrait
 
 
 class Symbol(OpTrait, BaseModel):

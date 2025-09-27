@@ -1,6 +1,8 @@
-from mlir.ir.attributes import AttributeBase
-import pytest
 from copy import deepcopy
+
+import pytest
+
+from mlir.ir.attributes import AttributeBase
 
 all_types = AttributeBase.__subclasses__()
 

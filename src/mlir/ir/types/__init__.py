@@ -1,10 +1,10 @@
 from .base import TypeBase, TypeStorage
 from .numbers import (
-    IntegerType,
-    IndexType,
-    FloatTypeKind,
-    SignednessSemantics,
     FloatType,
+    FloatTypeKind,
+    IndexType,
+    IntegerType,
+    SignednessSemantics,
 )
 
 __all__ = [

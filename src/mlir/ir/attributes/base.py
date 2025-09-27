@@ -1,6 +1,8 @@
-from pydantic import BaseModel, ConfigDict, Field, model_validator
-from mlir.ir.types import TypeBase
 from typing import TYPE_CHECKING, Any
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from mlir.ir.types import TypeBase
 
 if TYPE_CHECKING:
     pass

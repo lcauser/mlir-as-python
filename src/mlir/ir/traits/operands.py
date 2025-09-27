@@ -1,7 +1,9 @@
-from mlir.utils.validator import validator
 from functools import lru_cache
-from .base import OpTrait
 from typing import TYPE_CHECKING
+
+from mlir.utils.validator import validator
+
+from .base import OpTrait
 
 if TYPE_CHECKING:
     from mlir.ir.operations import Operation

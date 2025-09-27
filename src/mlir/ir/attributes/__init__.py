@@ -1,5 +1,5 @@
 from .base import AttributeBase, AttributeStorage
-from .numbers import IntegerAttribute, IndexAttribute, FloatAttribute
+from .numbers import FloatAttribute, IndexAttribute, IntegerAttribute
 
 __all__ = [
     "AttributeBase",

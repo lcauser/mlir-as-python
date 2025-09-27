@@ -1,10 +1,10 @@
 import pytest
 
 from mlir.ir.operations import Operation
-from mlir.ir.value import OpResult, BlockArgument
-from mlir.ir.types.numbers import IntegerType
-from mlir.utils.validator import validator, ValidatorError
 from mlir.ir.traits.base import OpTrait
+from mlir.ir.types.numbers import IntegerType
+from mlir.ir.value import BlockArgument, OpResult
+from mlir.utils.validator import ValidatorError, validator
 
 
 class TestTraitBase:

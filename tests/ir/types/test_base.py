@@ -1,9 +1,11 @@
-import pytest
-from mlir.context import MLIRContext
-from mlir.ir.types import TypeBase
+from copy import deepcopy
 from inspect import signature
 from itertools import product
-from copy import deepcopy
+
+import pytest
+
+from mlir.context import MLIRContext
+from mlir.ir.types import TypeBase
 
 all_types = TypeBase.__subclasses__()
 

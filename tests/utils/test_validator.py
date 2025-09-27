@@ -1,6 +1,6 @@
 import pytest
 
-from mlir.utils.validator import validator, ValidatorMeta, ValidatorError
+from mlir.utils.validator import ValidatorError, ValidatorMeta, validator
 
 
 class TestValidator:

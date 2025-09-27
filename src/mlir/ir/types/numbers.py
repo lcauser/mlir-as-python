@@ -1,8 +1,8 @@
-from pydantic import Field, PositiveInt
-from functools import cached_property
 from enum import Enum
-
+from functools import cached_property
 from typing import TYPE_CHECKING
+
+from pydantic import Field, PositiveInt
 
 if TYPE_CHECKING:
     from mlir.context import MLIRContext
