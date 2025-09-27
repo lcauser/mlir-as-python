@@ -1,5 +1,5 @@
-from mlir.ir.types import TypeBase, TypeStorage
 from mlir.ir.attributes import AttributeBase, AttributeStorage
+from mlir.ir.types import TypeBase, TypeStorage
 
 
 class MLIRContext:

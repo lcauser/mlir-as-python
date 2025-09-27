@@ -1,9 +1,9 @@
 import pytest
 
 from mlir.ir.blocks import Block
-from mlir.ir.value import BlockArgument, OpResult
-from mlir.ir.types.numbers import IntegerType
 from mlir.ir.operations import Operation
+from mlir.ir.types.numbers import IntegerType
+from mlir.ir.value import BlockArgument, OpResult
 
 
 class DummyOp(Operation):

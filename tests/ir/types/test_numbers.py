@@ -1,5 +1,5 @@
-from mlir.ir.types import IntegerType, SignednessSemantics, FloatTypeKind, FloatType
 from mlir.context import MLIRContext
+from mlir.ir.types import FloatType, FloatTypeKind, IntegerType, SignednessSemantics
 
 
 class TestIntegerType:

@@ -1,5 +1,5 @@
-from mlir.ir.value import Value, OpResult, BlockArgument
 from mlir.ir.types import TypeBase
+from mlir.ir.value import BlockArgument, OpResult, Value
 
 
 class DummyType(TypeBase):

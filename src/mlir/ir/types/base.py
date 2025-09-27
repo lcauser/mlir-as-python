@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from pydantic import BaseModel, ConfigDict
-
 from typing import TYPE_CHECKING
+
+from pydantic import BaseModel, ConfigDict
 
 if TYPE_CHECKING:
     from mlir.context import MLIRContext

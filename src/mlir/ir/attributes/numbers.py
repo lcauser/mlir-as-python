@@ -1,5 +1,7 @@
 from pydantic import Field
-from mlir.ir.types import IntegerType, IndexType, FloatType
+
+from mlir.ir.types import FloatType, IndexType, IntegerType
+
 from .base import AttributeBase
 
 

@@ -1,8 +1,9 @@
-from mlir.ir.value import BlockArgument
-from mlir.ir.operations import Operation
 from typing import TYPE_CHECKING
+
+from mlir.ir.operations import Operation
 from mlir.ir.traits.terminator import Terminator
 from mlir.ir.types import TypeBase
+from mlir.ir.value import BlockArgument
 
 if TYPE_CHECKING:
     from mlir.ir.regions import Region

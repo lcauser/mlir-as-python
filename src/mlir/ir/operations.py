@@ -1,9 +1,11 @@
-from pydantic import NonNegativeInt
+from abc import ABC, ABCMeta, abstractmethod
 from typing import TYPE_CHECKING
+
+from pydantic import NonNegativeInt
+
 from mlir.ir.attributes import AttributeBase
-from mlir.ir.value import Value, OpResult
-from mlir.utils.validator import validator, ValidatorMeta
-from abc import ABC, abstractmethod, ABCMeta
+from mlir.ir.value import OpResult, Value
+from mlir.utils.validator import ValidatorMeta, validator
 
 if TYPE_CHECKING:
     from mlir.ir.blocks import Block

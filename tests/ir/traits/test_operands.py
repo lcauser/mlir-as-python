@@ -2,8 +2,8 @@ import pytest
 
 from mlir.ir.operations import Operation
 from mlir.ir.traits.operands import NOperands
-from mlir.ir.value import OpResult, BlockArgument
 from mlir.ir.types.numbers import IntegerType
+from mlir.ir.value import BlockArgument, OpResult
 from mlir.utils.validator import ValidatorError
 
 

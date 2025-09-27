@@ -1,11 +1,13 @@
 from abc import ABC
-from pydantic import NonNegativeInt
-from mlir.ir.types import TypeBase
 from typing import TYPE_CHECKING
 
+from pydantic import NonNegativeInt
+
+from mlir.ir.types import TypeBase
+
 if TYPE_CHECKING:
-    from mlir.ir.operations import Operation, OpOperand
     from mlir.ir.blocks import Block
+    from mlir.ir.operations import Operation, OpOperand
 
 
 class Value(ABC):
